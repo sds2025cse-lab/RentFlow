@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Payment Successful - RentFlow{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="alert alert-success text-center p-5">
+                <i class="fas fa-check-circle" style="font-size: 4rem;"></i>
+                <h2 class="mt-3">Payment Successful!</h2>
+                <p class="lead mt-3">Thank you for your order.</p>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Order Details</h5>
+                    <p><strong>Order Number:</strong> {{ order.order_number }}</p>
+                    <p><strong>Total Amount:</strong> ${{ "%.2f"|format(order.total) }}</p>
+                    <p><strong>Status:</strong> <span class="badge bg-success">SHIPPED</span></p>
+                    <p class="text-muted mb-0">
+                        Your order has been confirmed and is being prepared for shipment.
+                    </p>
+                </div>
+            </div>
+
+            <div class="mt-4 text-center">
+                <a href="{{ url_for('orders.detail', order_id=order.id) }}" class="btn btn-primary me-2">
+                    View Order
+                </a>
+                <a href="{{ url_for('products.index') }}" class="btn btn-secondary">
+                    Continue Shopping
+                </a>
+            </div>
+
+            <div class="alert alert-info mt-4">
+                <h6>What's Next?</h6>
+                <ul class="mb-0">
+                    <li>You'll receive a confirmation email shortly</li>
+                    <li>Your rental period starts from the delivery date</li>
+                    <li>Track your order in your account</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

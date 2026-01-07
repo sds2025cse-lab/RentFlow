@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}Products - RentFlow{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="mb-4">Our Products</h1>
+    
+    <div class="row">
+        <!-- Sidebar Filters -->
+        <div class="col-md-3 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Filters</h5>
+                </div>
+                <div class="card-body">
+                    <form method="GET" action="{{ url_for('products.index') }}">
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Categories</strong></label>
+                            {% for category in categories %}
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="category" 
+                                        value="{{ category.id }}" id="cat-{{ category.id }}"
+                                        {% if selected_category == category.id %}checked{% endif %}>
+                                    <label class="form-check-label" for="cat-{{ category.id }}">
+                                        {{ category.name }}
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="search" class="form-label"><strong>Search</strong></label>
+                            <input type="text" class="form-control" id="search" name="q" 
+                                value="{{ search_q }}" placeholder="Search products...">
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary w-100">Search</button>
+                        {% if search_q or selected_category %}
+                            <a href="{{ url_for('products.index') }}" class="btn btn-secondary w-100 mt-2">Clear</a>
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="col-md-9">
+            {% if products.items %}
+                <div class="row">
+                    {% for product in products.items %}
+                        <div class="col-md-4 mb-4">
+                            <div class="card product-card">
+                                <img src="https://via.placeholder.com/300x200?text={{ product.name|replace(' ', '+') }}" 
+                                    class="card-img-top product-image" alt="{{ product.name }}">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ product.name }}</h5>
+                                    <p class="text-muted text-truncate">{{ product.description or 'No description' }}</p>
+                                    
+                                    <div class="mb-2">
+                                        <span class="badge bg-secondary">{{ product.category.name }}</span>
+                                    </div>
+                                    
+                                    {% if product.rating > 0 %}
+                                        <div class="rating mb-2">
+                                            {% for i in range(product.rating|int) %}
+                                                <i class="fas fa-star"></i>
+                                            {% endfor %}
+                                            <span class="text-muted ms-2">({{ product.review_count }})</span>
+                                        </div>
+                                    {% endif %}
+                                    
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="product-price">${{ "%.2f"|format(product.price) }}/day</span>
+                                        <a href="{{ url_for('products.detail', slug=product.slug) }}" 
+                                            class="btn btn-sm btn-primary">View</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Pagination -->
+                {% if products.pages > 1 %}
+                    <nav aria-label="Page navigation" class="mt-4">
+                        <ul class="pagination justify-content-center">
+                            {% if products.has_prev %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('products.index', page=products.prev_num, q=search_q, category=selected_category) }}">Previous</a>
+                                </li>
+                            {% endif %}
+
+                            {% for page_num in products.iter_pages() %}
+                                {% if page_num %}
+                                    {% if page_num == products.page %}
+                                        <li class="page-item active"><span class="page-link">{{ page_num }}</span></li>
+                                    {% else %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="{{ url_for('products.index', page=page_num, q=search_q, category=selected_category) }}">{{ page_num }}</a>
+                                        </li>
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if products.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('products.index', page=products.next_num, q=search_q, category=selected_category) }}">Next</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                {% endif %}
+            {% else %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> No products found. Try adjusting your filters.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

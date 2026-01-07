@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }} - RentFlow{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('products.index') }}">Products</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('products.category', slug=product.category.slug) }}">{{ product.category.name }}</a></li>
+            <li class="breadcrumb-item active">{{ product.name }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- Product Image -->
+        <div class="col-md-5 mb-4">
+            <img src="https://via.placeholder.com/400x400?text={{ product.name|replace(' ', '+') }}" 
+                class="img-fluid rounded" alt="{{ product.name }}">
+        </div>
+
+        <!-- Product Details -->
+        <div class="col-md-7">
+            <h1>{{ product.name }}</h1>
+            
+            <!-- Rating -->
+            {% if product.rating > 0 %}
+                <div class="rating mb-3">
+                    {% for i in range(product.rating|int) %}
+                        <i class="fas fa-star"></i>
+                    {% endfor %}
+                    <span class="text-muted ms-2">({{ product.review_count }} reviews)</span>
+                </div>
+            {% endif %}
+
+            <!-- Price -->
+            <h2 class="product-price mb-3">${{ "%.2f"|format(product.price) }}/day</h2>
+
+            <!-- Stock Status -->
+            <div class="mb-3">
+                {% if product.stock > 0 %}
+                    <span class="badge bg-success">In Stock ({{ product.stock }} available)</span>
+                {% else %}
+                    <span class="badge bg-danger">Out of Stock</span>
+                {% endif %}
+            </div>
+
+            <!-- Category -->
+            <div class="mb-3">
+                <strong>Category:</strong> 
+                <a href="{{ url_for('products.category', slug=product.category.slug) }}">{{ product.category.name }}</a>
+            </div>
+
+            <!-- Description -->
+            <div class="mb-4">
+                <h5>Description</h5>
+                <p>{{ product.description or 'No description available' }}</p>
+            </div>
+
+            <!-- Rental Info -->
+            <div class="mb-4">
+                <h5>Rental Period</h5>
+                <p>{{ product.rental_period_days }} days minimum rental</p>
+            </div>
+
+            <!-- Add to Cart Form -->
+            {% if current_user.is_authenticated %}
+                {% if product.stock > 0 %}
+                    <form method="POST" action="{{ url_for('cart.add_item', product_id=product.id) }}" class="mb-4">
+                        <div class="mb-3">
+                            <label for="quantity" class="form-label">Quantity:</label>
+                            <input type="number" class="form-control" style="max-width: 100px;" id="quantity" name="quantity" 
+                                value="1" min="1" max="{{ product.stock }}" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-shopping-cart"></i> Add to Cart
+                        </button>
+                    </form>
+                {% else %}
+                    <button class="btn btn-danger btn-lg" disabled>Out of Stock</button>
+                {% endif %}
+            {% else %}
+                <div class="alert alert-warning">
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-primary">Login to Purchase</a>
+                </div>
+            {% endif %}
+
+            <!-- Share -->
+            <div class="mt-4">
+                <h6>Share:</h6>
+                <a href="#" class="btn btn-outline-secondary btn-sm">
+                    <i class="fab fa-facebook"></i>
+                </a>
+                <a href="#" class="btn btn-outline-secondary btn-sm">
+                    <i class="fab fa-twitter"></i>
+                </a>
+                <a href="#" class="btn btn-outline-secondary btn-sm">
+                    <i class="fab fa-linkedin"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reviews Section -->
+    <div class="row mt-5">
+        <div class="col-md-12">
+            <h3>Customer Reviews</h3>
+            
+            {% if current_user.is_authenticated %}
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h6>Write a Review</h6>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" action="{{ url_for('products.add_review', product_id=product.id) }}">
+                            {{ review_form.hidden_tag() }}
+                            
+                            <div class="mb-3">
+                                {{ review_form.rating.label(class="form-label") }}
+                                {{ review_form.rating(class="form-select") }}
+                            </div>
+                            
+                            <div class="mb-3">
+                                {{ review_form.title.label(class="form-label") }}
+                                {{ review_form.title(class="form-control", placeholder="Review Title (Optional)") }}
+                            </div>
+                            
+                            <div class="mb-3">
+                                {{ review_form.content.label(class="form-label") }}
+                                {{ review_form.content(class="form-control", rows=5, placeholder="Share your experience...") }}
+                            </div>
+                            
+                            {{ review_form.submit(class="btn btn-primary") }}
+                        </form>
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- Reviews List -->
+            {% if reviews %}
+                <div class="review-list">
+                    {% for review in reviews %}
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">{{ review.title or 'No Title' }}</h6>
+                                        <div class="rating">
+                                            {% for i in range(review.rating) %}
+                                                <i class="fas fa-star"></i>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    <small class="text-muted">{{ review.created_at.strftime('%b %d, %Y') }}</small>
+                                </div>
+                                <p class="card-text mt-3">{{ review.content }}</p>
+                                <small class="text-muted">By {{ review.author.username }}</small>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-info">No reviews yet. Be the first to review this product!</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}Checkout - RentFlow{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="mb-4">Checkout</h1>
+
+    <div class="row">
+        <!-- Shipping Form -->
+        <div class="col-md-7">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Shipping Information</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" novalidate>
+                        {{ form.hidden_tag() }}
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                {{ form.shipping_name.label(class="form-label") }}
+                                {{ form.shipping_name(class="form-control") }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.shipping_email.label(class="form-label") }}
+                                {{ form.shipping_email(class="form-control") }}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.shipping_phone.label(class="form-label") }}
+                            {{ form.shipping_phone(class="form-control") }}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.shipping_address.label(class="form-label") }}
+                            {{ form.shipping_address(class="form-control", rows=3) }}
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                {{ form.shipping_city.label(class="form-label") }}
+                                {{ form.shipping_city(class="form-control") }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.shipping_state.label(class="form-label") }}
+                                {{ form.shipping_state(class="form-control") }}
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                {{ form.shipping_postal_code.label(class="form-label") }}
+                                {{ form.shipping_postal_code(class="form-control") }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.shipping_country.label(class="form-label") }}
+                                {{ form.shipping_country(class="form-control") }}
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            {{ form.submit(class="btn btn-primary btn-lg") }}
+                            <a href="{{ url_for('cart.view') }}" class="btn btn-secondary btn-lg">Back to Cart</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="col-md-5">
+            <div class="card sticky-top">
+                <div class="card-header">
+                    <h5>Order Summary</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h6>Items:</h6>
+                        {% for item in cart_items %}
+                            <div class="d-flex justify-content-between text-muted">
+                                <span>{{ item.product.name }} x{{ item.quantity }}</span>
+                                <span>${{ "%.2f"|format(item.get_total()) }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Subtotal:</span>
+                        <strong>${{ "%.2f"|format(subtotal) }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Tax (10%):</span>
+                        <strong>${{ "%.2f"|format(tax) }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span>Shipping:</span>
+                        <strong>${{ "%.2f"|format(shipping) }}</strong>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between">
+                        <h6>Total:</h6>
+                        <h6>${{ "%.2f"|format(total) }}</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

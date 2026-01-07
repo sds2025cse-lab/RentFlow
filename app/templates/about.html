@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}About RentFlow{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-md-8">
+            <h1 class="mb-4">About RentFlow</h1>
+            
+            <section class="mb-5">
+                <h3>Our Mission</h3>
+                <p class="lead">
+                    At RentFlow, we believe that everyone should have access to quality equipment without the 
+                    burden of ownership. Our mission is to make equipment rental convenient, affordable, and 
+                    accessible to everyone.
+                </p>
+            </section>
+
+            <section class="mb-5">
+                <h3>Why We Started</h3>
+                <p>
+                    Whether you're a homeowner working on a DIY project, a contractor needing specialized equipment, 
+                    or a business looking for cost-effective solutions, RentFlow has you covered. We understand the 
+                    challenges of finding the right equipment at the right price, and we're here to solve that.
+                </p>
+            </section>
+
+            <section class="mb-5">
+                <h3>Our Values</h3>
+                <ul>
+                    <li><strong>Quality:</strong> We maintain rigorous standards for all our equipment</li>
+                    <li><strong>Reliability:</strong> On-time delivery and returns are guaranteed</li>
+                    <li><strong>Affordability:</strong> Competitive pricing that saves you money</li>
+                    <li><strong>Customer Service:</strong> Dedicated support whenever you need us</li>
+                    <li><strong>Sustainability:</strong> Promoting reuse over consumption</li>
+                </ul>
+            </section>
+
+            <section>
+                <h3>Get in Touch</h3>
+                <p>
+                    Have questions? Want to partner with us? We'd love to hear from you!
+                </p>
+                <a href="{{ url_for('main.contact') }}" class="btn btn-primary btn-lg">Contact Us</a>
+            </section>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">By The Numbers</h5>
+                    <div class="mb-3">
+                        <h3 class="text-primary">50K+</h3>
+                        <p class="text-muted">Happy Customers</p>
+                    </div>
+                    <div class="mb-3">
+                        <h3 class="text-primary">100K+</h3>
+                        <p class="text-muted">Equipment Items</p>
+                    </div>
+                    <div class="mb-3">
+                        <h3 class="text-primary">500K+</h3>
+                        <p class="text-muted">Total Rentals</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

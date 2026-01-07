@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - RentFlow{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3>My Profile</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p><strong>Username:</strong> {{ user.username }}</p>
+                            <p><strong>Email:</strong> {{ user.email }}</p>
+                            <p><strong>Full Name:</strong> {{ user.get_full_name() or 'Not provided' }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Phone:</strong> {{ user.phone or 'Not provided' }}</p>
+                            <p><strong>Country:</strong> {{ user.country or 'Not provided' }}</p>
+                            <p><strong>Member Since:</strong> {{ user.created_at.strftime('%B %d, %Y') }}</p>
+                        </div>
+                    </div>
+                    <a href="{{ url_for('auth.edit_profile') }}" class="btn btn-primary">Edit Profile</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Quick Links</h5>
+                </div>
+                <div class="card-body">
+                    <a href="{{ url_for('orders.my_orders') }}" class="btn btn-outline-primary w-100 mb-2">My Orders</a>
+                    <a href="{{ url_for('products.index') }}" class="btn btn-outline-secondary w-100 mb-2">Continue Shopping</a>
+                    <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-danger w-100">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

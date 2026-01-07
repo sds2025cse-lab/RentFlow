@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Payment - RentFlow{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Complete Payment</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <p class="text-muted">Order: <strong>{{ order.order_number }}</strong></p>
+                        <div class="alert alert-info">
+                            <strong>Amount to Pay:</strong> ${{ "%.2f"|format(order.total) }}
+                        </div>
+                    </div>
+
+                    <!-- Stripe Payment Form -->
+                    {% if client_secret %}
+                        <form id="payment-form">
+                            <div id="card-element" class="form-control" style="height: 40px; padding-top: 10px;"></div>
+                            <div id="card-errors" class="text-danger mt-2"></div>
+                            <button type="submit" class="btn btn-primary btn-lg w-100 mt-4" id="submit-button">
+                                <i class="fas fa-lock"></i> Pay ${{ "%.2f"|format(order.total) }}
+                            </button>
+                        </form>
+                    {% else %}
+                        <div class="alert alert-warning">
+                            <p>Initializing payment...</p>
+                            <p>If this message persists, please <a href="{{ url_for('orders.detail', order_id=order.id) }}">go back</a>.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Test Card Info -->
+            <div class="alert alert-info mt-3">
+                <h6>Test Card Information (Stripe):</h6>
+                <ul class="mb-0">
+                    <li>Card Number: <code>4242 4242 4242 4242</code></li>
+                    <li>Expiry: Any future date (e.g., 12/25)</li>
+                    <li>CVC: Any 3 digits (e.g., 123)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if client_secret %}
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        const stripe = Stripe('{{ stripe_public_key }}');
+        const elements = stripe.elements();
+        const cardElement = elements.create('card');
+        cardElement.mount('#card-element');
+
+        const form = document.getElementById('payment-form');
+        const cardErrors = document.getElementById('card-errors');
+        const submitButton = document.getElementById('submit-button');
+
+        cardElement.addEventListener('change', (event) => {
+            if (event.error) {
+                cardErrors.textContent = event.error.message;
+            } else {
+                cardErrors.textContent = '';
+            }
+        });
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            submitButton.disabled = true;
+
+            const { setupIntent, error } = await stripe.confirmCardSetup(
+                '{{ client_secret }}',
+                { payment_method: { card: cardElement } }
+            );
+
+            if (error) {
+                cardErrors.textContent = error.message;
+                submitButton.disabled = false;
+            } else {
+                // Payment successful
+                window.location.href = '{{ url_for("orders.payment_success", order_id=order.id) }}';
+            }
+        });
+    </script>
+{% endif %}
+{% endblock %}
